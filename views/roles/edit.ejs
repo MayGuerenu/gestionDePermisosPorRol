@@ -1,0 +1,6 @@
+<h1>Editar Rol</h1>
+<form action="/roles/<%= role.id %>" method="POST">
+  <label>Nombre:</label>
+  <input type="text" name="name" value="<%= role.name %>" required />
+  <button type="submit">Actualizar</button>
+</form>
