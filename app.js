@@ -1,15 +1,13 @@
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
+const createError = require('http-errors');
+
 const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
-const createError = require('http-errors');
 const permisosRoutes = require('./routes/permisos');
-app.use('/permisos', permisosRoutes);
 
-
-// Instancia de la app
-const app = express();
+const app = express();  // Primero crear app
 
 // Configuracion de vistas
 app.set('view engine', 'ejs');
@@ -23,7 +21,7 @@ app.use(express.json());
 // Configuracion de rutas
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
-
+app.use('/permisos', permisosRoutes);  // Aquí va después de crear app
 
 // Configuracion de redireccion (por defecto)
 app.get('/', (req, res) => {
@@ -38,7 +36,10 @@ app.use((req, res, next) => {
 // Manejador de errores
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
-  res.render('general_error', { message: err.message, error: app.get('env') === 'development' ? err : {} });
+  res.render('general_error', { 
+    message: err.message, 
+    error: app.get('env') === 'development' ? err : {} 
+  });
 });
 
 module.exports = app;

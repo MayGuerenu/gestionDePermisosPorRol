@@ -2,5 +2,15 @@
 <form action="/roles/<%= role.id %>" method="POST">
   <label>Nombre:</label>
   <input type="text" name="name" value="<%= role.name %>" required />
+  
+  <h3>Permisos:</h3>
+  <% allPermissions.forEach(p => { %>
+    <label>
+      <input type="checkbox" name="permissions" value="<%= p.id %>"
+        <%= assignedPermissions.includes(p.id) ? 'checked' : '' %> />
+      <%= p.nombre %>
+    </label><br/>
+  <% }) %>
+
   <button type="submit">Actualizar</button>
 </form>

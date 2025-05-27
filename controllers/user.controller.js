@@ -1,4 +1,6 @@
 const User = require('../models/user.model');
+const Role = require('../models/role.model');
+
 
 function getAllUsers(req, res) {
   try {
@@ -15,7 +17,19 @@ function getUserById(req, res) {
   try {
     const user = User.getById(req.params.id);
     if (!user) return res.status(404).send('Usuario no encontrado');
-    res.render('users/detail', { user });
+
+    let permissions = [];
+    if (user.role_id) {
+      permissions = Role.getPermissions(user.role_id);
+    }
+
+    res.render('users/detail', { 
+      user: {
+        ...user,
+        role_name: user.role_name || 'Sin rol',
+      },
+      permissions
+    });
   } catch (err) {
     console.error('[Error]', err.message);
     res.status(500).send('Error en la búsqueda');

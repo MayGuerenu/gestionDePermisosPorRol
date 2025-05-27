@@ -18,10 +18,14 @@ function getAll({ limit = 10, offset = 0, search = '', role = null }) {
 }
 
 function getById(id) {
-  const user = db.prepare(`SELECT * FROM users WHERE id = ? AND deleted_at IS NULL`).get(id);
-  console.log(user ? chalk.blue(`[DB] Usuario ID ${id} obtenido`) : chalk.yellow(`[DB] Usuario ID ${id} no encontrado`));
+  const user = db.prepare(`
+    SELECT users.*, roles.name AS role_name FROM users
+    LEFT JOIN roles ON users.role_id = roles.id
+    WHERE users.id = ? AND users.deleted_at IS NULL
+  `).get(id);
   return user;
 }
+
 
 function create({ name, email, role_id }) {
   if (!name || name.length < 2) throw new Error('Nombre inválido');
@@ -56,4 +60,8 @@ function softDelete(id) {
   return result;
 }
 
-module.exports = { getAll, getById, create, update, softDelete };
+function getByEmail(email) {
+  return db.prepare('SELECT * FROM users WHERE email = ? AND deleted_at IS NULL').get(email);
+}
+
+module.exports = { getAll, getById, create, update, softDelete, getByEmail };

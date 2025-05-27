@@ -2,52 +2,63 @@ const db = require('../config/db');
 
 // Mostrar lista de permisos
 exports.listarPermisos = (req, res) => {
-  db.all('SELECT * FROM permisos', [], (err, permisos) => {
-    if (err) return res.send('Error al obtener permisos');
-    res.render('permisos/index', { permisos });
-  });
+  try {
+    const permisos = db.prepare('SELECT * FROM permissions').all();
+    console.log('[DB] Listado obtenido:', permisos);
+    res.render('permisos/index', { permisos: permisos || [] });
+  } catch (err) {
+    console.error('Error al obtener permisos:', err);
+    res.status(500).send('Error al obtener permisos: ' + err.message);
+  }
 };
 
 // Mostrar formulario para nuevo permiso
 exports.formNuevoPermiso = (req, res) => {
-  res.render('permisos/nuevo');
+  res.render('permisos/nuevo', { nombre: '', error: null });
 };
 
 // Crear nuevo permiso
 exports.crearPermiso = (req, res) => {
   const { nombre } = req.body;
-  db.run('INSERT INTO permisos (nombre) VALUES (?)', [nombre], function (err) {
-    if (err) {
-      return res.render('permisos/nuevo', { error: 'Ese permiso ya existe', nombre });
-    }
+  try {
+    db.prepare('INSERT INTO permissions (nombre) VALUES (?)').run(nombre);
     res.redirect('/permisos');
-  });
+  } catch (err) {
+    res.render('permisos/nuevo', { error: 'Ese permiso ya existe', nombre });
+  }
 };
+
 
 // Formulario de edición
 exports.formEditarPermiso = (req, res) => {
   const id = req.params.id;
-  db.get('SELECT * FROM permisos WHERE id = ?', [id], (err, permiso) => {
-    if (err || !permiso) return res.send('Permiso no encontrado');
+  try {
+    const permiso = db.prepare('SELECT * FROM permissions WHERE id = ?').get(id);
+    if (!permiso) return res.send('Permiso no encontrado');
     res.render('permisos/editar', { permiso });
-  });
+  } catch (err) {
+    res.status(500).send('Error al obtener permiso: ' + err.message);
+  }
 };
 
 // Actualizar permiso
 exports.actualizarPermiso = (req, res) => {
   const { id } = req.params;
   const { nombre } = req.body;
-  db.run('UPDATE permisos SET nombre = ? WHERE id = ?', [nombre, id], (err) => {
-    if (err) return res.send('Error al actualizar permiso');
+  try {
+    db.prepare('UPDATE permissions SET nombre = ? WHERE id = ?').run(nombre, id);
     res.redirect('/permisos');
-  });
+  } catch (err) {
+    res.status(500).send('Error al actualizar permiso: ' + err.message);
+  }
 };
-
 // Eliminar permiso
 exports.eliminarPermiso = (req, res) => {
   const { id } = req.params;
-  db.run('DELETE FROM permisos WHERE id = ?', [id], (err) => {
-    if (err) return res.send('Error al eliminar permiso');
+  try {
+    db.prepare('DELETE FROM permissions WHERE id = ?').run(id);
     res.redirect('/permisos');
-  });
+  } catch (err) {
+    res.send('Error al eliminar permiso');
+  }
 };

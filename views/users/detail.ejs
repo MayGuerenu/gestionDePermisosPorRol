@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Perfil de <%= user.user %></title>
+</head>
+<body>
+  <h1>Perfil de <%= user.user %></h1>
+  <p><strong>Email:</strong> <%= user.email %></p>
+  <p><strong>Rol:</strong> <%= user.role_name || 'Sin rol' %></p>
+
+  <h3>Permisos:</h3>
+  <% if (permissions.length > 0) { %>
+    <ul>
+      <% permissions.forEach(p => { %>
+        <li><%= p.nombre %></li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>Este usuario no tiene permisos asignados.</p>
+  <% } %>
+
+  <a href="/users">Volver al listado</a>
+</body>
+</html>

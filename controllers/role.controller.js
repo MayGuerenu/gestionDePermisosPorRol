@@ -1,78 +1,79 @@
-// controllers/role.controller.js
 const Role = require('../models/role.model');
+const Permission = require('../models/permissions.model');
 
 function getAllRoles(req, res) {
-  try {
-    const roles = Role.getAll();
-    res.render('roles/index', { roles });
-  } catch (err) {
-    console.error('[Error]', err.message);
-    res.status(500).send('Error al obtener roles');
-  }
+  const roles = Role.getAll();
+  res.render('roles/index', { roles });
 }
 
 function getRoleById(req, res) {
-    try {
-      const role = Role.getById(req.params.id);
-      if (!role) return res.status(404).send('Rol no encontrado');
-      res.render('roles/detail', { role });
-    } catch (err) {
-      console.error('[Error]', err.message);
-      res.status(500).send('Error al buscar el rol');
-    }
+  const role = Role.getById(req.params.id);
+  if (!role) return res.status(404).send('Rol no encontrado');
+
+  const permissions = Role.getPermissions(req.params.id);
+  res.render('roles/detail', { role, permissions });
+}
+
+function renderNewRoleForm(req, res) {
+  res.render('roles/new');
+}
+
+function createRole(req, res) {
+  try {
+    Role.create(req.body.name);
+    res.redirect('/roles');
+  } catch (err) {
+    res.status(400).send('Error al crear rol: ' + err.message);
   }
-  
-  function renderNewRoleForm(req, res) {
-    res.render('roles/new');
+}
+
+function renderEditRoleForm(req, res) {
+  const role = Role.getById(req.params.id);
+  if (!role) return res.status(404).send('Rol no encontrado');
+
+  const allPermissions = Permission.getAll();
+  const assignedPermissions = Role.getPermissions(req.params.id).map(p => p.id);
+
+  res.render('roles/edit', {
+    role,
+    allPermissions,
+    assignedPermissions
+  });
+}
+
+function updateRole(req, res) {
+  const { name, permissions } = req.body;
+  const roleId = req.params.id;
+
+  try {
+    Role.update(roleId, { name });
+
+    const perms = Array.isArray(permissions) ? permissions.map(Number) :
+                 permissions ? [Number(permissions)] : [];
+
+    Role.setPermissions(roleId, perms);
+
+    res.redirect('/roles');
+  } catch (err) {
+    res.status(400).send('Error al actualizar rol: ' + err.message);
   }
-  
-  function renderEditRoleForm(req, res) {
-    try {
-      const role = Role.getById(req.params.id);
-      if (!role) return res.status(404).send('Rol no encontrado');
-      res.render('roles/edit', { role });
-    } catch (err) {
-      console.error('[Error]', err.message);
-      res.status(500).send('Error al cargar formulario');
-    }
+}
+
+function deleteRole(req, res) {
+  try {
+    Role.delete(req.params.id);
+    res.redirect('/roles');
+  } catch (err) {
+    res.status(500).send('Error al eliminar rol');
   }
-  
-  function createRole(req, res) {
-    try {
-      Role.create(req.body);
-      res.redirect('/roles');
-    } catch (err) {
-      console.error('[Error]', err.message);
-      res.status(400).send('Error al crear: ' + err.message);
-    }
-  }
-  
-  function updateRole(req, res) {
-    try {
-      Role.update(req.params.id, req.body);
-      res.redirect('/roles');
-    } catch (err) {
-      console.error('[Error]', err.message);
-      res.status(400).send('Error al actualizar: ' + err.message);
-    }
-  }
-  
-  function deleteRole(req, res) {
-    try {
-      Role.remove(req.params.id);
-      res.redirect('/roles');
-    } catch (err) {
-      console.error('[Error]', err.message);
-      res.status(500).send('Error al eliminar');
-    }
-  }
-  
-  module.exports = {
-    getAllRoles,
-    getRoleById,
-    renderNewRoleForm,
-    renderEditRoleForm,
-    createRole,
-    updateRole,
-    deleteRole
-  };
+}
+
+module.exports = {
+  getAllRoles,
+  getRoleById,
+  renderNewRoleForm,
+  createRole,
+  renderEditRoleForm,
+  updateRole,
+  deleteRole
+};

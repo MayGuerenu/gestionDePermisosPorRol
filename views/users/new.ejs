@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Crear Usuario</title>
+</head>
+<body>
+  <h1>Crear Usuario</h1>
+  <form action="/users" method="POST">
+    <label>Nombre: <input type="text" name="name" required /></label><br />
+    <label>Email: <input type="email" name="email" required /></label><br />
+    <label>Rol:
+      <select name="role_id" required>
+        <% roles.forEach(role => { %>
+          <option value="<%= role.id %>"><%= role.name %></option>
+        <% }) %>
+      </select>
+    </label><br />
+    <button type="submit">Crear</button>
+  </form>
+  <a href="/users">Volver a listado</a>
+</body>
+</html>
