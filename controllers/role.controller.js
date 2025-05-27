@@ -20,7 +20,7 @@ function renderNewRoleForm(req, res) {
 
 function createRole(req, res) {
   try {
-    Role.create(req.body.name);
+    Role.create({ name: req.body.name });
     res.redirect('/roles');
   } catch (err) {
     res.status(400).send('Error al crear rol: ' + err.message);
@@ -61,7 +61,7 @@ function updateRole(req, res) {
 
 function deleteRole(req, res) {
   try {
-    Role.delete(req.params.id);
+    Role.remove(req.params.id);
     res.redirect('/roles');
   } catch (err) {
     res.status(500).send('Error al eliminar rol');

@@ -1,25 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Perfil de <%= user.user %></title>
+  <meta charset="UTF-8">
+  <title>Roles</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="container mt-5">
+
   <h1>Perfil de <%= user.user %></h1>
-  <p><strong>Email:</strong> <%= user.email %></p>
-  <p><strong>Rol:</strong> <%= user.role_name || 'Sin rol' %></p>
+  <p>Mail: <%= user.email %></p>
+  <p>Rol: <%= user.role_name || 'Sin rol' %></p>
 
   <h3>Permisos:</h3>
   <% if (permissions.length > 0) { %>
-    <ul>
+    <ul class="list-group">
       <% permissions.forEach(p => { %>
-        <li><%= p.nombre %></li>
+        <li class="list-group-item"><%= p.nombre %></li>
       <% }) %>
     </ul>
   <% } else { %>
     <p>Este usuario no tiene permisos asignados.</p>
   <% } %>
 
-  <a href="/users">Volver al listado</a>
+  <a href="/users" class="btn btn-secondary mt-1">Volver al listado</a>
+
 </body>
 </html>
