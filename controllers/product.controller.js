@@ -1,26 +1,18 @@
-const Product = require("../models/productModel");
+const Product = require("../models/product.model");
 
 function listarProductos(req, res) {
   const filtro = req.query.nombre || '';
-  try {
-    const productos = Product.getAllProducts(filtro);
-    res.render("productos", { productos, filtro });
-  } catch (err) {
-    res.status(500).send("Error al obtener productos");
-  }
+  const productos = Product.getAll(filtro);
+  res.render("productos/index", { productos, filtro });
 }
 
 function obtenerProducto(req, res) {
   const id = parseInt(req.params.id);
-  try {
-    const producto = Product.getProductById(id);
-    if (!producto) {
-      return res.status(404).send("Producto no encontrado");
-    }
-    res.render("productos/detail", { producto });
-  } catch (err) {
-    res.status(500).send("Error al obtener producto");
+  const producto = Product.getById(id);
+  if (!producto) {
+    return res.status(404).send("Producto no encontrado");
   }
+  res.render("productos/detail", { producto });
 }
 
 function formNuevoProducto(req, res) {
@@ -29,51 +21,41 @@ function formNuevoProducto(req, res) {
 
 function agregarProducto(req, res) {
   const { nombre, descripcion, precio } = req.body;
-  if (!nombre || !descripcion || isNaN(parseFloat(precio))) {
-    return res.status(400).send("Datos inválidos");
-  }
   try {
-    Product.createProduct(nombre, descripcion, parseFloat(precio));
+    Product.create(nombre, descripcion, parseFloat(precio));
     res.redirect("/productos");
   } catch (err) {
-    res.status(500).send("Error al crear producto");
+    res.status(400).send("Error al crear producto");
   }
 }
 
 function formEditarProducto(req, res) {
   const id = parseInt(req.params.id);
-  try {
-    const producto = Product.getProductById(id);
-    if (!producto) {
-      return res.status(404).send("Producto no encontrado");
-    }
-    res.render("productos/edit", { producto });
-  } catch (err) {
-    res.status(500).send("Error al obtener producto para edición");
+  const producto = Product.getById(id);
+  if (!producto) {
+    return res.status(404).send("Producto no encontrado");
   }
+  res.render("productos/edit", { producto });
 }
 
 function modificarProducto(req, res) {
   const id = parseInt(req.params.id);
   const { nombre, descripcion, precio } = req.body;
-  if (!nombre || !descripcion || isNaN(parseFloat(precio))) {
-    return res.status(400).send("Datos inválidos");
-  }
   try {
-    Product.updateProduct(id, nombre, descripcion, parseFloat(precio));
+    Product.update(id, nombre, descripcion, parseFloat(precio));
     res.redirect("/productos");
   } catch (err) {
-    res.status(500).send("Error al actualizar producto");
+    res.status(400).send("Error al actualizar producto");
   }
 }
 
 function eliminarProducto(req, res) {
   const id = parseInt(req.params.id);
   try {
-    Product.deleteProduct(id);
+    Product.delete(id);
     res.redirect("/productos");
   } catch (err) {
-    res.status(500).send("Error al eliminar producto");
+    res.status(400).send("Error al eliminar producto");
   }
 }
 

@@ -18,6 +18,8 @@ const roleRoutes = require('./routes/role.routes');
 const permisosRoutes = require('./routes/permisos');
 const authRoutes = require('./routes/auth.routes');
 const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cart.routes');
+
 
 
 app.use(authRoutes);
@@ -36,6 +38,7 @@ app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
 app.use('/permisos', permisosRoutes);
 app.use('/productos', productRoutes);
+app.use('/carrito', cartRoutes);
 
 
 // Configuracion de redireccion (por defecto)
