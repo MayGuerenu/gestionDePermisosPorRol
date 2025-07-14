@@ -19,7 +19,13 @@ function generateRandomId() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
+function deleteSession(sessionId) {
+  delete sessions[sessionId];
+}
+
+
 module.exports = {
   createSession,
-  getSession
+  getSession,
+  deleteSession
 };

@@ -23,18 +23,31 @@ router.get('/new', (req, res) => {
 
 
 router.get('/login', (req, res) => {
+  const currentUser = req.user;
+
+  if (currentUser) {
+    return res.redirect(`/users/${currentUser.userId}`);
+  }
+
   res.render('users/login');
 });
 
+
+const bcrypt = require('bcryptjs');
 const { createSession } = require('../services/session.service');
+const User = require('../models/user.model');
 
 router.post('/login', (req, res) => {
-  const User = require('../models/user.model');
-  const { email } = req.body;
-  const user = User.getByEmail(email);
+  const { email, password } = req.body;
 
+  const user = User.getByEmail(email);
   if (!user) {
     return res.status(401).send('Usuario no encontrado');
+  }
+
+  const validPassword = bcrypt.compareSync(password, user.password_hash);
+  if (!validPassword) {
+    return res.status(401).send('Contraseña incorrecta');
   }
 
   const sessionId = createSession(user);
@@ -42,10 +55,37 @@ router.post('/login', (req, res) => {
   res.redirect(`/users/${user.id}`);
 });
 
+const { deleteSession } = require('../services/session.service');
+
+router.post('/logout', (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (sessionId) {
+    deleteSession(sessionId);
+    res.clearCookie('sessionId');
+  }
+  res.redirect('/users/login');
+});
+
+router.get('/:id', (req, res) => {
+  const currentUser = req.user;
+
+  if (!currentUser) {
+    return res.redirect('/users/login');
+  }
+
+  const requestedId = parseInt(req.params.id);
+
+  if (currentUser.userId !== requestedId) {
+    return res.redirect('/users/login');
+  }
+
+  return controller.getUserById(req, res);
+});
+
+
 router.get('/', controller.getAllUsers);
 router.post('/', controller.createUser);
 
-router.get('/:id', controller.getUserById);
 router.put('/:id', controller.updateUser);
 router.delete('/:id', controller.deleteUser);
 

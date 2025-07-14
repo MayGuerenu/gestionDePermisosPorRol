@@ -46,7 +46,7 @@ function create({ name, email, role_id, password }) {
   const password_hash = bcrypt.hashSync(password, salt);
   const now = new Date().toISOString();
 
-  role_id = role_id === 1 ? 1 : 0;
+  role_id = role_id === 1 ? 1 : 2;
 
   const result = db.prepare(`
     INSERT INTO users (user, email, password_hash, role_id, created_at, updated_at)

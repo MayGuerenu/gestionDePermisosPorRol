@@ -7,9 +7,11 @@ const app = express();
 
 const cookieParser = require('cookie-parser');
 const sessionMiddleware = require('./middlewares/session.middleware');
+const logMiddleware = require('./middlewares/log.middleware');
 
 app.use(cookieParser());
 app.use(sessionMiddleware);
+app.use(logMiddleware);
 
 const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
