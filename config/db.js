@@ -50,6 +50,7 @@ db.exec(`
 CREATE TABLE IF NOT EXISTS productos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   nombre TEXT NOT NULL,
+  descripcion TEXT DEFAULT '',
   precio REAL NOT NULL
 );
 `);

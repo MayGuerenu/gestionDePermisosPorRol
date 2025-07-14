@@ -17,7 +17,7 @@ const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
 const permisosRoutes = require('./routes/permisos');
 const authRoutes = require('./routes/auth.routes');
-
+const productRoutes = require('./routes/productRoutes');
 
 
 app.use(authRoutes);
@@ -34,11 +34,13 @@ app.use(express.json());
 // Configuracion de rutas
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
-app.use('/permisos', permisosRoutes);  // Aquí va después de crear app
+app.use('/permisos', permisosRoutes);
+app.use('/productos', productRoutes);
+
 
 // Configuracion de redireccion (por defecto)
 app.get('/', (req, res) => {
-  res.redirect('/users');
+  res.redirect('/productos');
 });
 
 // Middleware de error 404
