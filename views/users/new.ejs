@@ -16,13 +16,16 @@
       <input class="form-control mb-1" type="password" name="password" required/>
     </label><br />
 
+  <% if (roles && roles.length > 0) { %>
     <label>Rol:
-      <select class="form-select mt-2" name="role_id" required>
+      <select class="form-select mt-2" name="role_id">
         <% roles.forEach(role => { %>
           <option value="<%= role.id %>"><%= role.name %></option>
         <% }) %>
       </select>
     </label><br />
+  <% } %>
+
 
     <button class="btn btn-primary mt-2" type="submit">Crear</button>
   </form>

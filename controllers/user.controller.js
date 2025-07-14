@@ -38,13 +38,20 @@ function getUserById(req, res) {
 
 function createUser(req, res) {
   try {
-    User.create(req.body);
+    const data = req.body;
+
+    const roleId = parseInt(data.role_id);
+    data.role_id = roleId === 1 ? 1 : 2;
+
+    User.create(data);
     res.redirect('/users');
   } catch (err) {
     console.error('[Error]', err.message);
     res.status(400).send('Error al crear: ' + err.message);
   }
 }
+
+
 
 function updateUser(req, res) {
   try {

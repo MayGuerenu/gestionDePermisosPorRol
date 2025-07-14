@@ -6,6 +6,7 @@ const Role = require('../models/role.model');
 
 router.get('/new', (req, res) => {
   const currentUser = req.user;
+  
 
   if (currentUser) {
     const isAdmin = currentUser.role === 'admin';

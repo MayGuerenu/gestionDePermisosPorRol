@@ -28,8 +28,14 @@ function getById(id) {
 }
 
 function getByEmail(email) {
-  return db.prepare('SELECT * FROM users WHERE email = ? AND deleted_at IS NULL').get(email);
+  return db.prepare(`
+    SELECT users.*, roles.name AS role_name
+    FROM users
+    LEFT JOIN roles ON users.role_id = roles.id
+    WHERE users.email = ? AND users.deleted_at IS NULL
+  `).get(email);
 }
+
 
 function create({ name, email, role_id, password }) {
   if (!name || name.length < 2) throw new Error('Nombre inválido');
@@ -40,10 +46,12 @@ function create({ name, email, role_id, password }) {
   const password_hash = bcrypt.hashSync(password, salt);
   const now = new Date().toISOString();
 
+  role_id = role_id === 1 ? 1 : 0;
+
   const result = db.prepare(`
     INSERT INTO users (user, email, password_hash, role_id, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).run(name, email, password_hash, role_id || null, now, now);
+  `).run(name, email, password_hash, role_id, now, now);
 
   console.log(chalk.green(`[DB] Usuario creado con ID ${result.lastInsertRowid}`));
   return result;

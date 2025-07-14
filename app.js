@@ -3,11 +3,19 @@ const path = require('path');
 const morgan = require('morgan');
 const createError = require('http-errors');
 
+const app = express();
+
+const cookieParser = require('cookie-parser');
+const sessionMiddleware = require('./middlewares/session.middleware');
+
+app.use(cookieParser());
+app.use(sessionMiddleware);
+
 const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
 const permisosRoutes = require('./routes/permisos');
 const authRoutes = require('./routes/auth.routes');
-const app = express();
+
 
 
 app.use(authRoutes);
@@ -44,12 +52,5 @@ app.use((err, req, res, next) => {
     error: app.get('env') === 'development' ? err : {} 
   });
 });
-
-const cookieParser = require('cookie-parser');
-app.use(cookieParser());
-
-const sessionMiddleware = require('./middlewares/session.middleware');
-app.use(sessionMiddleware);
-
 
 module.exports = app;
