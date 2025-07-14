@@ -6,8 +6,11 @@ const createError = require('http-errors');
 const userRoutes = require('./routes/user.routes');
 const roleRoutes = require('./routes/role.routes');
 const permisosRoutes = require('./routes/permisos');
+const authRoutes = require('./routes/auth.routes');
+const app = express();
 
-const app = express();  // Primero crear app
+
+app.use(authRoutes);
 
 // Configuracion de vistas
 app.set('view engine', 'ejs');
@@ -41,5 +44,12 @@ app.use((err, req, res, next) => {
     error: app.get('env') === 'development' ? err : {} 
   });
 });
+
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+const sessionMiddleware = require('./middlewares/session.middleware');
+app.use(sessionMiddleware);
+
 
 module.exports = app;

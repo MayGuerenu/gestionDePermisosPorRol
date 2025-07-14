@@ -5,23 +5,40 @@ const Role = require('../models/role.model');
 
 
 router.get('/new', (req, res) => {
-  const roles = Role.getAll();
-  res.render('users/new', { roles });
+  const currentUser = req.user;
+
+  if (currentUser) {
+    const isAdmin = currentUser.role === 'admin';
+    if (!isAdmin) {
+      return res.redirect(`/users/${currentUser.userId}`);
+    }
+
+    const roles = Role.getAll();
+    return res.render('users/new', { roles });
+  }
+
+  return res.render('users/new', { roles: [] });
 });
+
 
 router.get('/login', (req, res) => {
   res.render('users/login');
 });
 
+const { createSession } = require('../services/session.service');
+
 router.post('/login', (req, res) => {
   const User = require('../models/user.model');
   const { email } = req.body;
   const user = User.getByEmail(email);
-  if (user) {
-    res.redirect(`/users/${user.id}`);
-  } else {
-    res.status(401).send('Usuario no encontrado');
+
+  if (!user) {
+    return res.status(401).send('Usuario no encontrado');
   }
+
+  const sessionId = createSession(user);
+  res.cookie('sessionId', sessionId, { httpOnly: true });
+  res.redirect(`/users/${user.id}`);
 });
 
 router.get('/', controller.getAllUsers);
